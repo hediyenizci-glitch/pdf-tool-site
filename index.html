@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF & Image Converter</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    padding:0;
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:40px;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.title h1{
+    font-size:50px;
+    margin-bottom:10px;
+}
+
+.title p{
+    color:#94a3b8;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:25px;
+    border-radius:15px;
+}
+
+.card h2{
+    margin-top:0;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    background:#334155;
+    border:none;
+    border-radius:10px;
+    color:white;
+    margin-top:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:#3b82f6;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#2563eb;
+}
+
+#output{
+    margin-top:40px;
+}
+
+canvas{
+    width:100%;
+    margin-top:20px;
+    border-radius:10px;
+}
+
+a{
+    display:block;
+    margin-top:10px;
+    color:#38bdf8;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="title">
+<h1>PDF TOOL</h1>
+<p>PDF - JPG - PNG Converter</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h2>PDF → JPG</h2>
+
+<input type="file" id="pdfToJpg" accept="application/pdf">
+
+<button onclick="convertPDFtoJPG()">Dönüştür</button>
+</div>
+
+<div class="card">
+<h2>JPG / PNG → PDF</h2>
+
+<input type="file" id="imgToPdf" accept="image/png,image/jpeg">
+
+<button onclick="convertIMGtoPDF()">PDF Oluştur</button>
+</div>
+
+<div class="card">
+<h2>PNG → JPG</h2>
+
+<input type="file" id="pngToJpg" accept="image/png">
+
+<button onclick="convertPNGtoJPG()">Dönüştür</button>
+</div>
+
+<div class="card">
+<h2>JPG → PNG</h2>
+
+<input type="file" id="jpgToPng" accept="image/jpeg">
+
+<button onclick="convertJPGtoPNG()">Dönüştür</button>
+</div>
+
+</div>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+
+const output = document.getElementById("output");
+
+async function convertPDFtoJPG(){
+
+    output.innerHTML = "";
+
+    const file = document.getElementById("pdfToJpg").files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = async function(){
+
+        const typedarray = new Uint8Array(this.result);
+
+        const pdf = await pdfjsLib.getDocument({
+            data: typedarray
+        }).promise;
+
+        for(let i=1; i<=pdf.numPages; i++){
+
+            const page = await pdf.getPage(i);
+
+            const viewport = page.getViewport({
+                scale:2
+            });
+
+            const canvas = document.createElement("canvas");
+
+            const context = canvas.getContext("2d");
+
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            await page.render({
+                canvasContext:context,
+                viewport:viewport
+            }).promise;
+
+            const link = document.createElement("a");
+
+            link.href = canvas.toDataURL("image/jpeg");
+
+            link.download = `page-${i}.jpg`;
+
+            link.innerText = `Sayfa ${i} JPG indir`;
+
+            output.appendChild(canvas);
+            output.appendChild(link);
+        }
+
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+async function convertIMGtoPDF(){
+
+    const file = document.getElementById("imgToPdf").files[0];
+
+    if(!file) return;
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF();
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const img = new Image();
+
+        img.onload = function(){
+
+            pdf.addImage(img, 'JPEG', 10, 10, 180, 160);
+
+            pdf.save("converted.pdf");
+        }
+
+        img.src = e.target.result;
+    }
+
+    reader.readAsDataURL(file);
+}
+
+function convertPNGtoJPG(){
+
+    const file = document.getElementById("pngToJpg").files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const img = new Image();
+
+        img.onload = function(){
+
+            const canvas = document.createElement("canvas");
+
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+
+            ctx.drawImage(img,0,0);
+
+            const link = document.createElement("a");
+
+            link.download = "converted.jpg";
+
+            link.href = canvas.toDataURL("image/jpeg");
+
+            link.click();
+        }
+
+        img.src = e.target.result;
+    }
+
+    reader.readAsDataURL(file);
+}
+
+function convertJPGtoPNG(){
+
+    const file = document.getElementById("jpgToPng").files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const img = new Image();
+
+        img.onload = function(){
+
+            const canvas = document.createElement("canvas");
+
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img,0,0);
+
+            const link = document.createElement("a");
+
+            link.download = "converted.png";
+
+            link.href = canvas.toDataURL("image/png");
+
+            link.click();
+        }
+
+        img.src = e.target.result;
+    }
+
+    reader.readAsDataURL(file);
+}
+
+</script>
+
+</body>
+</html>
