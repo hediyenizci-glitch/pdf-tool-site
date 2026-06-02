@@ -11,6 +11,7 @@ crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
 
 <style>
 body{
@@ -153,7 +154,7 @@ footer a{
 
 <div class="title">
 <h1>PDF TOOL</h1>
-<p>PDF, JPG ve PNG dosyalarınızı kolayca dönüştürün</p>
+<p>PDF, Word, JPG ve PNG dosyalarınızı kolayca dönüştürün</p>
 </div>
 
 <div class="grid">
@@ -193,6 +194,21 @@ footer a{
 <button onclick="mergePDFs()">PDF Birleştir</button>
 </div>
 
+<div class="card">
+<h2>PDF Böl</h2>
+<p>PDF içinden istediğin sayfayı ayrı PDF olarak indir.</p>
+<input type="file" id="splitPdf" accept="application/pdf">
+<input type="number" id="pageNumber" placeholder="Sayfa No (Örn: 1)">
+<button onclick="splitPDF()">PDF Böl</button>
+</div>
+
+<div class="card">
+<h2>Word → PDF</h2>
+<p>DOCX dosyasını okunabilir PDF dosyasına çevir.</p>
+<input type="file" id="wordToPdf" accept=".docx">
+<button onclick="convertWordToPDF()">PDF Oluştur</button>
+</div>
+
 </div>
 
 <div id="output"></div>
@@ -200,8 +216,8 @@ footer a{
 <div class="info-section">
 <h2>PDF Tool Nedir?</h2>
 <p>
-PDF Tool, PDF ve görsel dosyalarınızı hızlı şekilde dönüştürmek için hazırlanmış ücretsiz bir online araçtır.
-PDF dosyalarını JPG formatına çevirebilir, JPG veya PNG görsellerinizi PDF dosyası haline getirebilir ve birden fazla PDF dosyasını tek dosyada birleştirebilirsiniz.
+PDF Tool, PDF, Word ve görsel dosyalarınızı hızlı şekilde dönüştürmek için hazırlanmış ücretsiz bir online araçtır.
+PDF dosyalarını JPG formatına çevirebilir, JPG veya PNG görsellerinizi PDF dosyası haline getirebilir, birden fazla PDF dosyasını tek dosyada birleştirebilir ve PDF dosyalarından belirli sayfaları ayırabilirsiniz.
 </p>
 
 <h2>Nasıl Kullanılır?</h2>
@@ -216,6 +232,7 @@ Evet, PDF Tool ücretsiz olarak kullanılabilir. Herhangi bir üyelik oluşturma
 </div>
 
 </div>
+
 <script>
 
 const output = document.getElementById("output");
@@ -428,6 +445,134 @@ async function mergePDFs(){
         console.error(error);
 
         alert("PDF birleştirme sırasında hata oluştu.");
+    }
+}
+
+async function splitPDF(){
+
+    const file = document.getElementById("splitPdf").files[0];
+
+    const pageNumber = parseInt(
+        document.getElementById("pageNumber").value
+    );
+
+    if(!file){
+        alert("PDF seçiniz.");
+        return;
+    }
+
+    if(!pageNumber || pageNumber < 1){
+        alert("Geçerli sayfa numarası giriniz.");
+        return;
+    }
+
+    try{
+
+        const bytes = await file.arrayBuffer();
+
+        const pdf = await PDFLib.PDFDocument.load(bytes);
+
+        if(pageNumber > pdf.getPageCount()){
+
+            alert("Bu sayfa PDF içinde bulunamadı.");
+            return;
+        }
+
+        const newPdf = await PDFLib.PDFDocument.create();
+
+        const [page] = await newPdf.copyPages(
+            pdf,
+            [pageNumber - 1]
+        );
+
+        newPdf.addPage(page);
+
+        const pdfBytes = await newPdf.save();
+
+        const blob = new Blob(
+            [pdfBytes],
+            {type:"application/pdf"}
+        );
+
+        const link = document.createElement("a");
+
+        link.href = URL.createObjectURL(blob);
+
+        link.download = `sayfa-${pageNumber}.pdf`;
+
+        link.click();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("PDF bölme sırasında hata oluştu.");
+    }
+}
+
+async function convertWordToPDF(){
+
+    const file = document.getElementById("wordToPdf").files[0];
+
+    if(!file){
+        alert("Word dosyası seçiniz. Sadece .docx desteklenir.");
+        return;
+    }
+
+    if(!file.name.toLowerCase().endsWith(".docx")){
+        alert("Lütfen .docx uzantılı Word dosyası seçiniz.");
+        return;
+    }
+
+    try{
+
+        const arrayBuffer = await file.arrayBuffer();
+
+        const result = await mammoth.extractRawText({
+            arrayBuffer: arrayBuffer
+        });
+
+        const text = result.value.trim();
+
+        if(!text){
+            alert("Word dosyasından metin okunamadı.");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF();
+
+        const margin = 15;
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const usableWidth = pageWidth - (margin * 2);
+
+        pdf.setFontSize(12);
+
+        const lines = pdf.splitTextToSize(text, usableWidth);
+
+        let y = margin;
+
+        lines.forEach(line=>{
+
+            if(y > pageHeight - margin){
+
+                pdf.addPage();
+                y = margin;
+            }
+
+            pdf.text(line, margin, y);
+            y += 7;
+        });
+
+        pdf.save("word-to-pdf.pdf");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Word PDF dönüştürme sırasında hata oluştu.");
     }
 }
 
