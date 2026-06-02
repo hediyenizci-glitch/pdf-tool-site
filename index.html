@@ -11,7 +11,6 @@ crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
 
 <style>
 body{
@@ -154,7 +153,7 @@ footer a{
 
 <div class="title">
 <h1>PDF TOOL</h1>
-<p>PDF, Word, JPG ve PNG dosyalarınızı kolayca dönüştürün</p>
+<p>PDF, JPG ve PNG dosyalarınızı kolayca dönüştürün, birleştirin ve sıkıştırın</p>
 </div>
 
 <div class="grid">
@@ -186,7 +185,6 @@ footer a{
 <input type="file" id="jpgToPng" accept="image/jpeg">
 <button onclick="convertJPGtoPNG()">Dönüştür</button>
 </div>
-
 <div class="card">
 <h2>PDF Birleştir</h2>
 <p>Birden fazla PDF dosyasını tek PDF haline getir.</p>
@@ -203,10 +201,10 @@ footer a{
 </div>
 
 <div class="card">
-<h2>Word → PDF</h2>
-<p>DOCX dosyasını okunabilir PDF dosyasına çevir.</p>
-<input type="file" id="wordToPdf" accept=".docx">
-<button onclick="convertWordToPDF()">PDF Oluştur</button>
+<h2>Görsel Sıkıştır</h2>
+<p>JPG veya PNG dosyasının boyutunu küçült.</p>
+<input type="file" id="compressImage" accept="image/png,image/jpeg">
+<button onclick="compressImageFile()">Görseli Sıkıştır</button>
 </div>
 
 </div>
@@ -216,8 +214,8 @@ footer a{
 <div class="info-section">
 <h2>PDF Tool Nedir?</h2>
 <p>
-PDF Tool, PDF, Word ve görsel dosyalarınızı hızlı şekilde dönüştürmek için hazırlanmış ücretsiz bir online araçtır.
-PDF dosyalarını JPG formatına çevirebilir, JPG veya PNG görsellerinizi PDF dosyası haline getirebilir, birden fazla PDF dosyasını tek dosyada birleştirebilir ve PDF dosyalarından belirli sayfaları ayırabilirsiniz.
+PDF Tool, PDF ve görsel dosyalarınızı hızlı şekilde dönüştürmek için hazırlanmış ücretsiz bir online araçtır.
+PDF dosyalarını JPG formatına çevirebilir, JPG veya PNG görsellerinizi PDF dosyası haline getirebilir, birden fazla PDF dosyasını tek PDF dosyasında birleştirebilir, PDF içinden istediğiniz sayfayı ayırabilir ve görsellerinizi sıkıştırabilirsiniz.
 </p>
 
 <h2>Nasıl Kullanılır?</h2>
@@ -319,8 +317,7 @@ async function convertIMGtoPDF(){
 
     reader.readAsDataURL(file);
 }
-
-function convertPNGtoJPG(){
+    function convertPNGtoJPG(){
 
     const file = document.getElementById("pngToJpg").files[0];
 
@@ -510,70 +507,47 @@ async function splitPDF(){
     }
 }
 
-async function convertWordToPDF(){
+function compressImageFile(){
 
-    const file = document.getElementById("wordToPdf").files[0];
+    const file = document.getElementById("compressImage").files[0];
 
     if(!file){
-        alert("Word dosyası seçiniz. Sadece .docx desteklenir.");
+        alert("Görsel seçiniz.");
         return;
     }
 
-    if(!file.name.toLowerCase().endsWith(".docx")){
-        alert("Lütfen .docx uzantılı Word dosyası seçiniz.");
-        return;
-    }
+    const reader = new FileReader();
 
-    try{
+    reader.onload = function(e){
 
-        const arrayBuffer = await file.arrayBuffer();
+        const img = new Image();
 
-        const result = await mammoth.extractRawText({
-            arrayBuffer: arrayBuffer
-        });
+        img.onload = function(){
 
-        const text = result.value.trim();
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
 
-        if(!text){
-            alert("Word dosyasından metin okunamadı.");
-            return;
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img,0,0);
+
+            const link = document.createElement("a");
+
+            link.download = "compressed.jpg";
+
+            link.href = canvas.toDataURL(
+                "image/jpeg",
+                0.6
+            );
+
+            link.click();
         }
 
-        const { jsPDF } = window.jspdf;
-
-        const pdf = new jsPDF();
-
-        const margin = 15;
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const usableWidth = pageWidth - (margin * 2);
-
-        pdf.setFontSize(12);
-
-        const lines = pdf.splitTextToSize(text, usableWidth);
-
-        let y = margin;
-
-        lines.forEach(line=>{
-
-            if(y > pageHeight - margin){
-
-                pdf.addPage();
-                y = margin;
-            }
-
-            pdf.text(line, margin, y);
-            y += 7;
-        });
-
-        pdf.save("word-to-pdf.pdf");
-
-    }catch(error){
-
-        console.error(error);
-
-        alert("Word PDF dönüştürme sırasında hata oluştu.");
+        img.src = e.target.result;
     }
+
+    reader.readAsDataURL(file);
 }
 
 </script>
