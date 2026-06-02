@@ -460,150 +460,141 @@ async function mergePDFs(){
 
 async function splitPDF(){
 
-```
-const file = document.getElementById("splitPdf").files[0];
+    const file = document.getElementById("splitPdf").files[0];
 
-const pageNumber = parseInt(
-    document.getElementById("pageNumber").value
-);
+    const pageNumber = parseInt(
+        document.getElementById("pageNumber").value
+    );
 
-if(!file){
-    alert("PDF seçiniz.");
-    return;
-}
-
-if(!pageNumber || pageNumber < 1){
-    alert("Geçerli sayfa numarası giriniz.");
-    return;
-}
-
-try{
-
-    const bytes = await file.arrayBuffer();
-
-    const pdf = await PDFLib.PDFDocument.load(bytes);
-
-    if(pageNumber > pdf.getPageCount()){
-
-        alert("Bu sayfa PDF içinde bulunamadı.");
+    if(!file){
+        alert("PDF seçiniz.");
         return;
     }
 
-    const newPdf = await PDFLib.PDFDocument.create();
+    if(!pageNumber || pageNumber < 1){
+        alert("Geçerli sayfa numarası giriniz.");
+        return;
+    }
 
-    const [page] = await newPdf.copyPages(
-        pdf,
-        [pageNumber - 1]
-    );
+    try{
 
-    newPdf.addPage(page);
+        const bytes = await file.arrayBuffer();
 
-    const pdfBytes = await newPdf.save();
+        const pdf = await PDFLib.PDFDocument.load(bytes);
 
-    const blob = new Blob(
-        [pdfBytes],
-        {type:"application/pdf"}
-    );
+        if(pageNumber > pdf.getPageCount()){
 
-    const link = document.createElement("a");
+            alert("Bu sayfa PDF içinde bulunamadı.");
+            return;
+        }
 
-    link.href = URL.createObjectURL(blob);
+        const newPdf = await PDFLib.PDFDocument.create();
 
-    link.download = `sayfa-${pageNumber}.pdf`;
+        const [page] = await newPdf.copyPages(
+            pdf,
+            [pageNumber - 1]
+        );
 
-    link.click();
+        newPdf.addPage(page);
 
-}catch(error){
+        const pdfBytes = await newPdf.save();
 
-    console.error(error);
+        const blob = new Blob(
+            [pdfBytes],
+            {type:"application/pdf"}
+        );
 
-    alert("PDF bölme sırasında hata oluştu.");
-}
-```
+        const link = document.createElement("a");
 
+        link.href = URL.createObjectURL(blob);
+
+        link.download = `sayfa-${pageNumber}.pdf`;
+
+        link.click();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("PDF bölme sırasında hata oluştu.");
+    }
 }
 
 async function deletePDFPage(){
 
-```
-const file =
-document.getElementById("deletePdf").files[0];
+    const file =
+    document.getElementById("deletePdf").files[0];
 
-const pageNumber =
-parseInt(
-    document.getElementById(
-        "deletePageNumber"
-    ).value
-);
-
-if(!file){
-
-    alert("PDF seçiniz.");
-    return;
-}
-
-if(!pageNumber || pageNumber < 1){
-
-    alert("Geçerli sayfa numarası giriniz.");
-    return;
-}
-
-try{
-
-    const bytes =
-    await file.arrayBuffer();
-
-    const pdf =
-    await PDFLib.PDFDocument.load(
-        bytes
+    const pageNumber =
+    parseInt(
+        document.getElementById(
+            "deletePageNumber"
+        ).value
     );
 
-    const totalPages =
-    pdf.getPageCount();
+    if(!file){
 
-    if(pageNumber > totalPages){
-
-        alert(
-            "Bu sayfa PDF içinde bulunamadı."
-        );
-
+        alert("PDF seçiniz.");
         return;
     }
 
-    pdf.removePage(pageNumber - 1);
+    if(!pageNumber || pageNumber < 1){
 
-    const pdfBytes =
-    await pdf.save();
+        alert("Geçerli sayfa numarası giriniz.");
+        return;
+    }
 
-    const blob =
-    new Blob(
-        [pdfBytes],
-        {
-            type:"application/pdf"
+    try{
+
+        const bytes =
+        await file.arrayBuffer();
+
+        const pdf =
+        await PDFLib.PDFDocument.load(
+            bytes
+        );
+
+        if(pageNumber > pdf.getPageCount()){
+
+            alert(
+                "Bu sayfa PDF içinde bulunamadı."
+            );
+
+            return;
         }
-    );
 
-    const link =
-    document.createElement("a");
+        pdf.removePage(pageNumber - 1);
 
-    link.href =
-    URL.createObjectURL(blob);
+        const pdfBytes =
+        await pdf.save();
 
-    link.download =
-    "sayfa-silinmis.pdf";
+        const blob =
+        new Blob(
+            [pdfBytes],
+            {
+                type:"application/pdf"
+            }
+        );
 
-    link.click();
+        const link =
+        document.createElement("a");
 
-}catch(error){
+        link.href =
+        URL.createObjectURL(blob);
 
-    console.error(error);
+        link.download =
+        "sayfa-silinmis.pdf";
 
-    alert(
-        "PDF sayfa silme sırasında hata oluştu."
-    );
-}
-```
+        link.click();
 
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "PDF sayfa silme sırasında hata oluştu."
+        );
+    }
 }
 
 </script>
