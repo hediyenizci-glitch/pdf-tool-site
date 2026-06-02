@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7980397726646290"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7980397726646290"
+crossorigin="anonymous"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF & Image Converter</title>
+<title>PDF Tool - PDF ve Görsel Dönüştürücü</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
 <style>
-
 body{
     margin:0;
     padding:0;
@@ -56,6 +57,11 @@ body{
     margin-top:0;
 }
 
+.card p{
+    color:#94a3b8;
+    font-size:14px;
+}
+
 input{
     width:100%;
     padding:12px;
@@ -64,6 +70,7 @@ input{
     border-radius:10px;
     color:white;
     margin-top:15px;
+    box-sizing:border-box;
 }
 
 button{
@@ -98,57 +105,117 @@ a{
     color:#38bdf8;
 }
 
+.info-section{
+    max-width:900px;
+    margin:50px auto 0 auto;
+    background:#1e293b;
+    padding:30px;
+    border-radius:15px;
+    line-height:1.8;
+}
+
+.info-section h2{
+    margin-top:0;
+}
+
+footer{
+    text-align:center;
+    margin-top:50px;
+    padding:20px;
+    color:#94a3b8;
+}
+
+footer a{
+    display:inline;
+    color:#38bdf8;
+    margin:0 5px;
+}
+
+@media(max-width:700px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .title h1{
+        font-size:36px;
+    }
+
+    .container{
+        padding:20px;
+    }
+}
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
 <div class="title">
 <h1>PDF TOOL</h1>
-<p>PDF - JPG - PNG Converter</p>
+<p>PDF, JPG ve PNG dosyalarınızı kolayca dönüştürün</p>
 </div>
 
 <div class="grid">
 
 <div class="card">
 <h2>PDF → JPG</h2>
-
+<p>PDF sayfalarını JPG görsel olarak indir.</p>
 <input type="file" id="pdfToJpg" accept="application/pdf">
-
 <button onclick="convertPDFtoJPG()">Dönüştür</button>
 </div>
 
 <div class="card">
 <h2>JPG / PNG → PDF</h2>
-
+<p>Görsel dosyanı PDF formatına çevir.</p>
 <input type="file" id="imgToPdf" accept="image/png,image/jpeg">
-
 <button onclick="convertIMGtoPDF()">PDF Oluştur</button>
 </div>
 
 <div class="card">
 <h2>PNG → JPG</h2>
-
+<p>PNG görselini JPG formatına dönüştür.</p>
 <input type="file" id="pngToJpg" accept="image/png">
-
 <button onclick="convertPNGtoJPG()">Dönüştür</button>
 </div>
 
 <div class="card">
 <h2>JPG → PNG</h2>
-
+<p>JPG görselini PNG formatına dönüştür.</p>
 <input type="file" id="jpgToPng" accept="image/jpeg">
-
 <button onclick="convertJPGtoPNG()">Dönüştür</button>
+</div>
+
+<div class="card">
+<h2>PDF Birleştir</h2>
+<p>Birden fazla PDF dosyasını tek PDF haline getir.</p>
+<input type="file" id="mergePdf" accept="application/pdf" multiple>
+<button onclick="mergePDFs()">PDF Birleştir</button>
 </div>
 
 </div>
 
 <div id="output"></div>
 
+<div class="info-section">
+<h2>PDF Tool Nedir?</h2>
+<p>
+PDF Tool, PDF ve görsel dosyalarınızı hızlı şekilde dönüştürmek için hazırlanmış ücretsiz bir online araçtır.
+PDF dosyalarını JPG formatına çevirebilir, JPG veya PNG görsellerinizi PDF dosyası haline getirebilir ve birden fazla PDF dosyasını tek dosyada birleştirebilirsiniz.
+</p>
+
+<h2>Nasıl Kullanılır?</h2>
+<p>
+Kullanmak istediğiniz aracı seçin, dosyanızı yükleyin ve ilgili butona tıklayın. İşlem tamamlandıktan sonra dosyanız otomatik olarak indirilebilir hale gelir.
+</p>
+
+<h2>Ücretsiz mi?</h2>
+<p>
+Evet, PDF Tool ücretsiz olarak kullanılabilir. Herhangi bir üyelik oluşturmanıza gerek yoktur.
+</p>
 </div>
 
+</div>
 <script>
 
 const output = document.getElementById("output");
@@ -197,12 +264,11 @@ async function convertPDFtoJPG(){
 
             link.download = `page-${i}.jpg`;
 
-            link.innerText = `Sayfa ${i} JPG indir`;
+            link.innerText = `Sayfa ${i} JPG İndir`;
 
             output.appendChild(canvas);
             output.appendChild(link);
         }
-
     };
 
     reader.readAsArrayBuffer(file);
@@ -226,7 +292,7 @@ async function convertIMGtoPDF(){
 
         img.onload = function(){
 
-            pdf.addImage(img, 'JPEG', 10, 10, 180, 160);
+            pdf.addImage(img,'JPEG',10,10,180,160);
 
             pdf.save("converted.pdf");
         }
@@ -252,7 +318,6 @@ function convertPNGtoJPG(){
         img.onload = function(){
 
             const canvas = document.createElement("canvas");
-
             const ctx = canvas.getContext("2d");
 
             canvas.width = img.width;
@@ -266,7 +331,6 @@ function convertPNGtoJPG(){
             const link = document.createElement("a");
 
             link.download = "converted.jpg";
-
             link.href = canvas.toDataURL("image/jpeg");
 
             link.click();
@@ -293,7 +357,6 @@ function convertJPGtoPNG(){
         img.onload = function(){
 
             const canvas = document.createElement("canvas");
-
             const ctx = canvas.getContext("2d");
 
             canvas.width = img.width;
@@ -304,7 +367,6 @@ function convertJPGtoPNG(){
             const link = document.createElement("a");
 
             link.download = "converted.png";
-
             link.href = canvas.toDataURL("image/png");
 
             link.click();
@@ -316,14 +378,67 @@ function convertJPGtoPNG(){
     reader.readAsDataURL(file);
 }
 
+async function mergePDFs(){
+
+    const files = document.getElementById("mergePdf").files;
+
+    if(files.length < 2){
+
+        alert("En az 2 PDF seçmelisiniz.");
+        return;
+    }
+
+    try{
+
+        const mergedPdf = await PDFLib.PDFDocument.create();
+
+        for(const file of files){
+
+            const bytes = await file.arrayBuffer();
+
+            const pdf = await PDFLib.PDFDocument.load(bytes);
+
+            const pages = await mergedPdf.copyPages(
+                pdf,
+                pdf.getPageIndices()
+            );
+
+            pages.forEach(page=>{
+                mergedPdf.addPage(page);
+            });
+        }
+
+        const mergedBytes = await mergedPdf.save();
+
+        const blob = new Blob(
+            [mergedBytes],
+            { type:"application/pdf" }
+        );
+
+        const link = document.createElement("a");
+
+        link.href = URL.createObjectURL(blob);
+
+        link.download = "birlestirilmis.pdf";
+
+        link.click();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("PDF birleştirme sırasında hata oluştu.");
+    }
+}
+
 </script>
 
-<footer style="text-align:center;margin-top:50px;padding:20px;color:#94a3b8;">
-<a href="about.html">About</a> |
-<a href="privacy.html">Privacy Policy</a> |
-<a href="contact.html">Contact</a>
+<footer>
+<a href="about.html">Hakkımızda</a> |
+<a href="privacy.html">Gizlilik Politikası</a> |
+<a href="contact.html">İletişim</a>
 <br><br>
-© 2026 PDF Tool. All Rights Reserved.
+© 2026 PDF Tool. Tüm Hakları Saklıdır.
 </footer>
 
 </body>
