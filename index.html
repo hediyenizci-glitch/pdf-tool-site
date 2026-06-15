@@ -1,605 +1,123 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7980397726646290"
-crossorigin="anonymous"></script>
-
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7980397726646290" crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Tool - PDF ve Görsel Dönüştürücü</title>
-
+<title>PDF Tool - Ücretsiz PDF ve Görsel Dönüştürücü</title>
+<meta name="description" content="PDF Tool ile PDF birleştirme, PDF bölme, PDF sayfa silme, PDF JPG dönüştürme ve JPG PDF oluşturma işlemlerini ücretsiz yapın.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
 <style>
-body{
-    margin:0;
-    padding:0;
-    background:#0f172a;
-    font-family:Arial;
-    color:white;
-}
-
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:40px;
-}
-
-.title{
-    text-align:center;
-    margin-bottom:40px;
-}
-
-.title h1{
-    font-size:50px;
-    margin-bottom:10px;
-}
-
-.title p{
-    color:#94a3b8;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-
-.card{
-    background:#1e293b;
-    padding:25px;
-    border-radius:15px;
-}
-
-.card h2{
-    margin-top:0;
-}
-
-.card p{
-    color:#94a3b8;
-    font-size:14px;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    background:#334155;
-    border:none;
-    border-radius:10px;
-    color:white;
-    margin-top:15px;
-    box-sizing:border-box;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    margin-top:15px;
-    border:none;
-    border-radius:10px;
-    background:#3b82f6;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#2563eb;
-}
-
-#output{
-    margin-top:40px;
-}
-
-canvas{
-    width:100%;
-    margin-top:20px;
-    border-radius:10px;
-}
-
-a{
-    display:block;
-    margin-top:10px;
-    color:#38bdf8;
-}
-
-.info-section{
-    max-width:900px;
-    margin:50px auto 0 auto;
-    background:#1e293b;
-    padding:30px;
-    border-radius:15px;
-    line-height:1.8;
-}
-
-.info-section h2{
-    margin-top:0;
-}
-
-footer{
-    text-align:center;
-    margin-top:50px;
-    padding:20px;
-    color:#94a3b8;
-}
-
-footer a{
-    display:inline;
-    color:#38bdf8;
-    margin:0 5px;
-}
-
-@media(max-width:700px){
-    .grid{
-        grid-template-columns:1fr;
-    }
-
-    .title h1{
-        font-size:36px;
-    }
-
-    .container{
-        padding:20px;
-    }
-}
+body{margin:0;padding:0;background:#0f172a;font-family:Arial,Helvetica,sans-serif;color:white;}
+.container{max-width:1000px;margin:auto;padding:35px;}
+.title{text-align:center;margin-bottom:35px;}
+.title h1{font-size:46px;margin-bottom:10px;}
+.title p,.card p,.info-section p,li{color:#cbd5e1;line-height:1.8;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.card{background:#1e293b;padding:25px;border-radius:15px;}
+input{width:100%;padding:12px;background:#334155;border:none;border-radius:10px;color:white;margin-top:15px;box-sizing:border-box;}
+button{width:100%;padding:12px;margin-top:15px;border:none;border-radius:10px;background:#3b82f6;color:white;font-size:16px;cursor:pointer;}
+button:hover{background:#2563eb;}
+#output{margin-top:40px;}
+canvas{width:100%;margin-top:20px;border-radius:10px;}
+a{color:#38bdf8;}
+.info-section{max-width:1000px;margin:45px auto 0 auto;background:#1e293b;padding:32px;border-radius:15px;line-height:1.8;}
+.info-section h2{margin-top:30px;color:#fff;}
+.info-section h3{margin-top:22px;color:#e2e8f0;}
+footer{text-align:center;margin-top:50px;padding:25px;color:#94a3b8;}
+footer a{display:inline;color:#38bdf8;margin:0 5px;}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.title h1{font-size:34px}.container{padding:20px}}
 </style>
+
 </head>
-
 <body>
-
 <div class="container">
-
 <div class="title">
 <h1>PDF TOOL</h1>
-<p>PDF, JPG ve PNG dosyalarınızı kolayca dönüştürün, birleştirin ve sıkıştırın</p>
+<p>PDF ve görsel dosyalarınızı kolayca dönüştürün, birleştirin, bölün ve düzenleyin.</p>
 </div>
 
 <div class="grid">
-
-<div class="card">
-<h2>PDF → JPG</h2>
-<p>PDF sayfalarını JPG görsel olarak indir.</p>
-<input type="file" id="pdfToJpg" accept="application/pdf">
-<button onclick="convertPDFtoJPG()">Dönüştür</button>
-</div>
-
-<div class="card">
-<h2>JPG / PNG → PDF</h2>
-<p>Görsel dosyanı PDF formatına çevir.</p>
-<input type="file" id="imgToPdf" accept="image/png,image/jpeg">
-<button onclick="convertIMGtoPDF()">PDF Oluştur</button>
-</div>
-
-<div class="card">
-<h2>PNG → JPG</h2>
-<p>PNG görselini JPG formatına dönüştür.</p>
-<input type="file" id="pngToJpg" accept="image/png">
-<button onclick="convertPNGtoJPG()">Dönüştür</button>
-</div>
-
-<div class="card">
-<h2>JPG → PNG</h2>
-<p>JPG görselini PNG formatına dönüştür.</p>
-<input type="file" id="jpgToPng" accept="image/jpeg">
-<button onclick="convertJPGtoPNG()">Dönüştür</button>
-</div>
-<div class="card">
-<h2>PDF Birleştir</h2>
-<p>Birden fazla PDF dosyasını tek PDF haline getir.</p>
-<input type="file" id="mergePdf" accept="application/pdf" multiple>
-<button onclick="mergePDFs()">PDF Birleştir</button>
-</div>
-
-<div class="card">
-<h2>PDF Böl</h2>
-<p>PDF içinden istediğin sayfayı ayrı PDF olarak indir.</p>
-<input type="file" id="splitPdf" accept="application/pdf">
-<input type="number" id="pageNumber" placeholder="Sayfa No (Örn: 1)">
-<button onclick="splitPDF()">PDF Böl</button>
-</div>
-    <div class="card">
-<h2>PDF Sayfa Sil</h2>
-
-<p>PDF içinden istediğin sayfayı sil.</p>
-
-<input type="file"
-id="deletePdf"
-accept="application/pdf">
-
-<input type="number"
-id="deletePageNumber"
-placeholder="Silinecek Sayfa No">
-
-<button onclick="deletePDFPage()">
-Sayfayı Sil
-</button>
-
-</div>
-
-
-
+<div class="card"><h2>PDF → JPG</h2><p>PDF sayfalarını JPG görsel olarak indir.</p><input type="file" id="pdfToJpg" accept="application/pdf"><button onclick="convertPDFtoJPG()">Dönüştür</button></div>
+<div class="card"><h2>JPG / PNG → PDF</h2><p>Görsel dosyanı PDF formatına çevir.</p><input type="file" id="imgToPdf" accept="image/png,image/jpeg"><button onclick="convertIMGtoPDF()">PDF Oluştur</button></div>
+<div class="card"><h2>PNG → JPG</h2><p>PNG görselini JPG formatına dönüştür.</p><input type="file" id="pngToJpg" accept="image/png"><button onclick="convertPNGtoJPG()">Dönüştür</button></div>
+<div class="card"><h2>JPG → PNG</h2><p>JPG görselini PNG formatına dönüştür.</p><input type="file" id="jpgToPng" accept="image/jpeg"><button onclick="convertJPGtoPNG()">Dönüştür</button></div>
+<div class="card"><h2>PDF Birleştir</h2><p>Birden fazla PDF dosyasını tek PDF haline getir.</p><input type="file" id="mergePdf" accept="application/pdf" multiple><button onclick="mergePDFs()">PDF Birleştir</button></div>
+<div class="card"><h2>PDF Böl</h2><p>PDF içinden istediğin sayfayı ayrı PDF olarak indir.</p><input type="file" id="splitPdf" accept="application/pdf"><input type="number" id="pageNumber" placeholder="Sayfa No (Örn: 1)"><button onclick="splitPDF()">PDF Böl</button></div>
+<div class="card"><h2>PDF Sayfa Sil</h2><p>PDF içinden istediğin sayfayı sil.</p><input type="file" id="deletePdf" accept="application/pdf"><input type="number" id="deletePageNumber" placeholder="Silinecek Sayfa No"><button onclick="deletePDFPage()">Sayfayı Sil</button></div>
 </div>
 
 <div id="output"></div>
 
 <div class="info-section">
 <h2>PDF Tool Nedir?</h2>
-<p>
-PDF Tool, PDF ve görsel dosyalarınızı hızlı şekilde dönüştürmek için hazırlanmış ücretsiz bir online araçtır.
-PDF dosyalarını JPG formatına çevirebilir, JPG veya PNG görsellerinizi PDF dosyası haline getirebilir, birden fazla PDF dosyasını tek PDF dosyasında birleştirebilir, PDF içinden istediğiniz sayfayı ayırabilir ve görsellerinizi sıkıştırabilirsiniz.
-</p>
+<p>PDF Tool, günlük hayatta sık kullanılan PDF ve görsel dosya işlemlerini hızlı şekilde yapmak için hazırlanmış ücretsiz bir online araçtır. Bir dosyayı farklı bir formata çevirmek, birden fazla PDF dosyasını tek dosyada toplamak, PDF içinden belirli bir sayfayı ayırmak veya gereksiz bir sayfayı silmek için ek program kurmadan işlem yapabilirsiniz.</p>
 
-<h2>Nasıl Kullanılır?</h2>
-<p>
-Kullanmak istediğiniz aracı seçin, dosyanızı yükleyin ve ilgili butona tıklayın. İşlem tamamlandıktan sonra dosyanız otomatik olarak indirilebilir hale gelir.
-</p>
+<h2>PDF Nedir?</h2>
+<p>PDF, belge düzeninin farklı cihazlarda bozulmadan görüntülenmesini sağlayan yaygın bir dosya formatıdır. Fatura, sözleşme, okul ödevi, iş evrakı, başvuru formu, kullanım kılavuzu ve resmi belgelerde sıkça kullanılır. PDF dosyalarının avantajı; yazı tipleri, görseller, sayfa düzeni ve tabloların çoğu cihazda aynı şekilde korunmasıdır.</p>
 
-<h2>Ücretsiz mi?</h2>
-<p>
-Evet, PDF Tool ücretsiz olarak kullanılabilir. Herhangi bir üyelik oluşturmanıza gerek yoktur.
-</p>
+<h2>PDF Birleştirme Nasıl Yapılır?</h2>
+<p>PDF birleştirme aracı, birden fazla PDF dosyasını tek dosya haline getirmenizi sağlar. Örneğin kimlik fotokopisi, başvuru formu, dilekçe ve ek belgeleri ayrı ayrı göndermek yerine tek bir PDF dosyasında toplayabilirsiniz. PDF Birleştir bölümünden en az iki PDF seçin ve PDF Birleştir butonuna basın. İşlem tamamlandığında birleştirilmiş dosya otomatik olarak indirilmeye hazır olur.</p>
+
+<h2>PDF Bölme Nasıl Yapılır?</h2>
+<p>PDF bölme aracı, büyük bir PDF dosyasının içinden sadece ihtiyacınız olan sayfayı çıkarmanıza yardımcı olur. Örneğin 20 sayfalık bir belgede yalnızca 4. sayfayı göndermeniz gerekiyorsa dosyayı yükleyip sayfa numarasını yazmanız yeterlidir. Araç seçtiğiniz sayfayı ayrı bir PDF dosyası olarak oluşturur.</p>
+
+<h2>PDF Sayfa Silme Ne İşe Yarar?</h2>
+<p>Bazen PDF dosyalarında boş sayfa, hatalı sayfa, eski bilgi içeren sayfa veya gönderilmemesi gereken özel bir bölüm bulunabilir. PDF Sayfa Sil aracı ile dosyayı tamamen baştan hazırlamadan sadece istemediğiniz sayfayı kaldırabilirsiniz. Bu işlem özellikle taranmış belgeler, başvuru evrakları ve rapor dosyalarında pratiklik sağlar.</p>
+
+<h2>JPG ve PNG Dosyalarını PDF Yapma</h2>
+<p>Telefonla çekilmiş belge fotoğrafları, ekran görüntüleri veya taranmış görseller bazen PDF formatında istenir. JPG / PNG → PDF aracı sayesinde tek bir görsel dosyasını PDF haline getirebilirsiniz. Bu yöntem okul, iş ve resmi başvurularda belgeyi daha düzenli sunmak için kullanışlıdır.</p>
+
+<h2>PDF Dosyalarını JPG Görsele Çevirme</h2>
+<p>PDF → JPG aracı, PDF sayfalarını görsel dosyası olarak indirmenizi sağlar. Bir belgenin belirli sayfalarını resim olarak paylaşmak, sunumda kullanmak veya hızlı ön izleme almak için bu özellik kullanılabilir. Her sayfa ayrı JPG olarak oluşturulur.</p>
+
+<h2>Dosya Güvenliği</h2>
+<p>PDF Tool, dosyalarınızı düzenlemek için tarayıcı üzerinde çalışan basit araçlar kullanır. Yine de çok gizli, banka şifresi, kimlik bilgisi, sağlık raporu veya özel sözleşme gibi hassas belgelerde her zaman dikkatli olmanız önerilir. İnternette dosya yüklediğiniz her araçta kişisel verilerinizi kontrol ederek işlem yapmanız daha güvenlidir.</p>
+
+<h2>Neden PDF Tool Kullanılır?</h2>
+<ul>
+<li>Ücretsizdir ve üyelik istemez.</li>
+<li>PDF birleştirme, bölme ve sayfa silme işlemlerini tek yerde toplar.</li>
+<li>JPG, PNG ve PDF arasında temel dönüşümler yapar.</li>
+<li>Bilgisayar ve telefon tarayıcılarında kullanılabilir.</li>
+<li>Basit arayüzü sayesinde teknik bilgi gerektirmez.</li>
+</ul>
+
+<h2>Sık Sorulan Sorular</h2>
+<h3>PDF Tool ücretsiz mi?</h3>
+<p>Evet, PDF Tool ücretsiz olarak kullanılabilir. Dosya dönüştürmek veya PDF düzenlemek için üyelik oluşturmanız gerekmez.</p>
+<h3>PDF birleştirme için kaç dosya seçebilirim?</h3>
+<p>Birden fazla PDF dosyası seçebilirsiniz. Çok büyük dosyalarda işlem süresi bilgisayarınızın veya telefonunuzun performansına göre değişebilir.</p>
+<h3>PDF bölme işlemi tüm dosyayı değiştirir mi?</h3>
+<p>Hayır. PDF bölme işlemi orijinal dosyanızı değiştirmez. Seçtiğiniz sayfa yeni bir PDF dosyası olarak indirilir.</p>
+<h3>Telefondan kullanabilir miyim?</h3>
+<p>Evet. Site mobil tarayıcılarla uyumludur. Ancak büyük dosyalarda bilgisayar kullanmak daha hızlı olabilir.</p>
+<h3>PDF sayfa silme işleminde orijinal dosyam bozulur mu?</h3>
+<p>Hayır. İşlem sonunda yeni bir PDF dosyası oluşturulur. Orijinal dosyanız cihazınızda aynı şekilde kalır.</p>
+<h3>PDF dosyam neden uzun sürede işleniyor?</h3>
+<p>PDF dosyanız çok sayfalıysa, yüksek çözünürlüklü görseller içeriyorsa veya cihazınız yavaşsa işlem biraz daha uzun sürebilir.</p>
 </div>
-
 </div>
 
 <script>
-
-const output = document.getElementById("output");
-
-async function convertPDFtoJPG(){
-
-    output.innerHTML = "";
-
-    const file = document.getElementById("pdfToJpg").files[0];
-
-    if(!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = async function(){
-
-        const typedarray = new Uint8Array(this.result);
-
-        const pdf = await pdfjsLib.getDocument({
-            data: typedarray
-        }).promise;
-
-        for(let i=1; i<=pdf.numPages; i++){
-
-            const page = await pdf.getPage(i);
-
-            const viewport = page.getViewport({
-                scale:2
-            });
-
-            const canvas = document.createElement("canvas");
-
-            const context = canvas.getContext("2d");
-
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-
-            await page.render({
-                canvasContext:context,
-                viewport:viewport
-            }).promise;
-
-            const link = document.createElement("a");
-
-            link.href = canvas.toDataURL("image/jpeg");
-
-            link.download = `page-${i}.jpg`;
-
-            link.innerText = `Sayfa ${i} JPG İndir`;
-
-            output.appendChild(canvas);
-            output.appendChild(link);
-        }
-    };
-
-    reader.readAsArrayBuffer(file);
-}
-
-async function convertIMGtoPDF(){
-
-    const file = document.getElementById("imgToPdf").files[0];
-
-    if(!file) return;
-
-    const { jsPDF } = window.jspdf;
-
-    const pdf = new jsPDF();
-
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-
-        const img = new Image();
-
-        img.onload = function(){
-
-            pdf.addImage(img,'JPEG',10,10,180,160);
-
-            pdf.save("converted.pdf");
-        }
-
-        img.src = e.target.result;
-    }
-
-    reader.readAsDataURL(file);
-}
-    function convertPNGtoJPG(){
-
-    const file = document.getElementById("pngToJpg").files[0];
-
-    if(!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-
-        const img = new Image();
-
-        img.onload = function(){
-
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-
-            ctx.drawImage(img,0,0);
-
-            const link = document.createElement("a");
-
-            link.download = "converted.jpg";
-            link.href = canvas.toDataURL("image/jpeg");
-
-            link.click();
-        }
-
-        img.src = e.target.result;
-    }
-
-    reader.readAsDataURL(file);
-}
-
-function convertJPGtoPNG(){
-
-    const file = document.getElementById("jpgToPng").files[0];
-
-    if(!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-
-        const img = new Image();
-
-        img.onload = function(){
-
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.drawImage(img,0,0);
-
-            const link = document.createElement("a");
-
-            link.download = "converted.png";
-            link.href = canvas.toDataURL("image/png");
-
-            link.click();
-        }
-
-        img.src = e.target.result;
-    }
-
-    reader.readAsDataURL(file);
-}
-
-async function mergePDFs(){
-
-    const files = document.getElementById("mergePdf").files;
-
-    if(files.length < 2){
-
-        alert("En az 2 PDF seçmelisiniz.");
-        return;
-    }
-
-    try{
-
-        const mergedPdf = await PDFLib.PDFDocument.create();
-
-        for(const file of files){
-
-            const bytes = await file.arrayBuffer();
-
-            const pdf = await PDFLib.PDFDocument.load(bytes);
-
-            const pages = await mergedPdf.copyPages(
-                pdf,
-                pdf.getPageIndices()
-            );
-
-            pages.forEach(page=>{
-                mergedPdf.addPage(page);
-            });
-        }
-
-        const mergedBytes = await mergedPdf.save();
-
-        const blob = new Blob(
-            [mergedBytes],
-            { type:"application/pdf" }
-        );
-
-        const link = document.createElement("a");
-
-        link.href = URL.createObjectURL(blob);
-
-        link.download = "birlestirilmis.pdf";
-
-        link.click();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert("PDF birleştirme sırasında hata oluştu.");
-    }
-}
-
-async function splitPDF(){
-
-    const file = document.getElementById("splitPdf").files[0];
-
-    const pageNumber = parseInt(
-        document.getElementById("pageNumber").value
-    );
-
-    if(!file){
-        alert("PDF seçiniz.");
-        return;
-    }
-
-    if(!pageNumber || pageNumber < 1){
-        alert("Geçerli sayfa numarası giriniz.");
-        return;
-    }
-
-    try{
-
-        const bytes = await file.arrayBuffer();
-
-        const pdf = await PDFLib.PDFDocument.load(bytes);
-
-        if(pageNumber > pdf.getPageCount()){
-
-            alert("Bu sayfa PDF içinde bulunamadı.");
-            return;
-        }
-
-        const newPdf = await PDFLib.PDFDocument.create();
-
-        const [page] = await newPdf.copyPages(
-            pdf,
-            [pageNumber - 1]
-        );
-
-        newPdf.addPage(page);
-
-        const pdfBytes = await newPdf.save();
-
-        const blob = new Blob(
-            [pdfBytes],
-            {type:"application/pdf"}
-        );
-
-        const link = document.createElement("a");
-
-        link.href = URL.createObjectURL(blob);
-
-        link.download = `sayfa-${pageNumber}.pdf`;
-
-        link.click();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert("PDF bölme sırasında hata oluştu.");
-    }
-}
-
-async function deletePDFPage(){
-
-    const file =
-    document.getElementById("deletePdf").files[0];
-
-    const pageNumber =
-    parseInt(
-        document.getElementById(
-            "deletePageNumber"
-        ).value
-    );
-
-    if(!file){
-
-        alert("PDF seçiniz.");
-        return;
-    }
-
-    if(!pageNumber || pageNumber < 1){
-
-        alert("Geçerli sayfa numarası giriniz.");
-        return;
-    }
-
-    try{
-
-        const bytes =
-        await file.arrayBuffer();
-
-        const pdf =
-        await PDFLib.PDFDocument.load(
-            bytes
-        );
-
-        if(pageNumber > pdf.getPageCount()){
-
-            alert(
-                "Bu sayfa PDF içinde bulunamadı."
-            );
-
-            return;
-        }
-
-        pdf.removePage(pageNumber - 1);
-
-        const pdfBytes =
-        await pdf.save();
-
-        const blob =
-        new Blob(
-            [pdfBytes],
-            {
-                type:"application/pdf"
-            }
-        );
-
-        const link =
-        document.createElement("a");
-
-        link.href =
-        URL.createObjectURL(blob);
-
-        link.download =
-        "sayfa-silinmis.pdf";
-
-        link.click();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "PDF sayfa silme sırasında hata oluştu."
-        );
-    }
-}
-
+const output=document.getElementById("output");
+async function convertPDFtoJPG(){output.innerHTML="";const file=document.getElementById("pdfToJpg").files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(){const typedarray=new Uint8Array(this.result);const pdf=await pdfjsLib.getDocument({data:typedarray}).promise;for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const viewport=page.getViewport({scale:2});const canvas=document.createElement("canvas");const context=canvas.getContext("2d");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:context,viewport:viewport}).promise;const link=document.createElement("a");link.href=canvas.toDataURL("image/jpeg");link.download=`page-${i}.jpg`;link.innerText=`Sayfa ${i} JPG İndir`;output.appendChild(canvas);output.appendChild(link);}};reader.readAsArrayBuffer(file);}
+async function convertIMGtoPDF(){const file=document.getElementById("imgToPdf").files[0];if(!file)return;const {jsPDF}=window.jspdf;const pdf=new jsPDF();const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){pdf.addImage(img,'JPEG',10,10,180,160);pdf.save("converted.pdf");};img.src=e.target.result;};reader.readAsDataURL(file);}
+function convertPNGtoJPG(){const file=document.getElementById("pngToJpg").files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement("canvas");const ctx=canvas.getContext("2d");canvas.width=img.width;canvas.height=img.height;ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);const link=document.createElement("a");link.download="converted.jpg";link.href=canvas.toDataURL("image/jpeg");link.click();};img.src=e.target.result;};reader.readAsDataURL(file);}
+function convertJPGtoPNG(){const file=document.getElementById("jpgToPng").files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement("canvas");const ctx=canvas.getContext("2d");canvas.width=img.width;canvas.height=img.height;ctx.drawImage(img,0,0);const link=document.createElement("a");link.download="converted.png";link.href=canvas.toDataURL("image/png");link.click();};img.src=e.target.result;};reader.readAsDataURL(file);}
+async function mergePDFs(){const files=document.getElementById("mergePdf").files;if(files.length<2){alert("En az 2 PDF seçmelisiniz.");return;}try{const mergedPdf=await PDFLib.PDFDocument.create();for(const file of files){const bytes=await file.arrayBuffer();const pdf=await PDFLib.PDFDocument.load(bytes);const pages=await mergedPdf.copyPages(pdf,pdf.getPageIndices());pages.forEach(page=>{mergedPdf.addPage(page);});}const mergedBytes=await mergedPdf.save();const blob=new Blob([mergedBytes],{type:"application/pdf"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="birlestirilmis.pdf";link.click();}catch(error){console.error(error);alert("PDF birleştirme sırasında hata oluştu.");}}
+async function splitPDF(){const file=document.getElementById("splitPdf").files[0];const pageNumber=parseInt(document.getElementById("pageNumber").value);if(!file){alert("PDF seçiniz.");return;}if(!pageNumber||pageNumber<1){alert("Geçerli sayfa numarası giriniz.");return;}try{const bytes=await file.arrayBuffer();const pdf=await PDFLib.PDFDocument.load(bytes);if(pageNumber>pdf.getPageCount()){alert("Bu sayfa PDF içinde bulunamadı.");return;}const newPdf=await PDFLib.PDFDocument.create();const [page]=await newPdf.copyPages(pdf,[pageNumber-1]);newPdf.addPage(page);const pdfBytes=await newPdf.save();const blob=new Blob([pdfBytes],{type:"application/pdf"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`sayfa-${pageNumber}.pdf`;link.click();}catch(error){console.error(error);alert("PDF bölme sırasında hata oluştu.");}}
+async function deletePDFPage(){const file=document.getElementById("deletePdf").files[0];const pageNumber=parseInt(document.getElementById("deletePageNumber").value);if(!file){alert("PDF seçiniz.");return;}if(!pageNumber||pageNumber<1){alert("Geçerli sayfa numarası giriniz.");return;}try{const bytes=await file.arrayBuffer();const pdf=await PDFLib.PDFDocument.load(bytes);if(pageNumber>pdf.getPageCount()){alert("Bu sayfa PDF içinde bulunamadı.");return;}pdf.removePage(pageNumber-1);const pdfBytes=await pdf.save();const blob=new Blob([pdfBytes],{type:"application/pdf"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="sayfa-silinmis.pdf";link.click();}catch(error){console.error(error);alert("PDF sayfa silme sırasında hata oluştu.");}}
 </script>
 
 <footer>
+<a href="index.html">Ana Sayfa</a> |
+<a href="pdf-rehberi.html">PDF Rehberi</a> |
+<a href="pdf-birlestirme.html">PDF Birleştirme</a> |
+<a href="pdf-bolme.html">PDF Bölme</a> |
 <a href="about.html">Hakkımızda</a> |
 <a href="privacy.html">Gizlilik Politikası</a> |
 <a href="contact.html">İletişim</a>
